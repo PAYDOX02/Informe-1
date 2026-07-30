@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe 1 — Mantenimiento e Infraestructura de Hardware · Diego Piox</title>
+<meta name="description" content="Ecosistema de soporte técnico: video-tutorial, manual técnico y guía rápida para el mantenimiento preventivo de un equipo portátil. Prácticas Iniciales, Ingeniería en Ciencias y Sistemas, USAC.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Saira:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --void:#0B0C0F;
+    --panel:#131519;
+    --panel-2:#191C22;
+    --steel:#2A2F39;
+    --steel-soft:#20242C;
+    --tuf:#FFC61A;
+    --tuf-dim:#B8890B;
+    --hazard:#0B0C0F;
+    --danger:#E8402A;
+    --txt:#EBEDF0;
+    --txt-dim:#969CA8;
+    --txt-faint:#646B78;
+
+    --f-display:'Chakra Petch', system-ui, sans-serif;
+    --f-body:'Saira', system-ui, sans-serif;
+    --f-mono:'Share Tech Mono', ui-monospace, monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+
+  body{
+    font-family:var(--f-body);
+    color:var(--txt);
+    background:var(--void);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    position:relative;
+    overflow-x:hidden;
+  }
+  /* ambient tactical background: faint grid + corner glow */
+  body::before{
+    content:"";position:fixed;inset:0;z-index:-2;
+    background:
+      linear-gradient(rgba(255,198,26,.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,198,26,.028) 1px, transparent 1px);
+    background-size:34px 34px;
+  }
+  body::after{
+    content:"";position:fixed;top:-20%;right:-10%;width:60vw;height:60vw;z-index:-2;
+    background:radial-gradient(circle, rgba(255,198,26,.10), transparent 62%);
+    pointer-events:none;
+  }
+
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px}
+  .mono{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.1em;text-transform:uppercase}
+
+  /* hazard stripe divider */
+  .hazard{
+    height:7px;width:100%;
+    background:repeating-linear-gradient(-45deg, var(--tuf) 0 13px, var(--hazard) 13px 26px);
+    opacity:.9;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    border-bottom:1px solid var(--steel);
+    background:rgba(11,12,15,.82);
+    backdrop-filter:blur(8px);
+    position:sticky;top:0;z-index:30;
+  }
+  .topbar .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;height:50px}
+  .topbar .inst{color:var(--txt-dim)}
+  .topbar .tag-right{color:var(--tuf);font-weight:700;display:flex;align-items:center;gap:9px}
+  .topbar .tag-right::before{content:"";width:8px;height:8px;background:var(--tuf);transform:rotate(45deg);box-shadow:0 0 8px var(--tuf)}
+  @media(max-width:640px){.topbar .inst{display:none}}
+
+  /* ---------- hero ---------- */
+  .hero{padding:66px 0 54px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:46px;align-items:start}
+
+  .eyebrow{
+    color:var(--tuf);margin-bottom:22px;display:inline-flex;align-items:center;gap:11px;
+    font-family:var(--f-mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;
+    border:1px solid var(--steel);border-left:3px solid var(--tuf);
+    padding:7px 13px;background:var(--panel);
+  }
+  .eyebrow .sq{width:7px;height:7px;background:var(--tuf);transform:rotate(45deg)}
+
+  h1{
+    font-family:var(--f-display);
+    font-weight:700;
+    font-size:clamp(2.3rem,6vw,4rem);
+    line-height:.98;
+    letter-spacing:.005em;
+    text-transform:uppercase;
+    margin-bottom:22px;
+  }
+  h1 .num{
+    display:block;font-family:var(--f-mono);font-weight:400;
+    font-size:.26em;letter-spacing:.2em;color:var(--txt-faint);
+    margin-bottom:16px;text-transform:uppercase;
+  }
+  h1 .stroke{
+    color:transparent;-webkit-text-stroke:1.6px var(--tuf);
+    text-shadow:0 0 24px rgba(255,198,26,.18);
+  }
+
+  .hero-sub{font-family:var(--f-body);font-size:1.1rem;color:var(--txt-dim);max-width:47ch;margin-bottom:28px;font-weight:400}
+
+  .equip-tag{
+    display:inline-flex;align-items:center;gap:11px;
+    font-family:var(--f-mono);font-size:.78rem;letter-spacing:.04em;
+    color:var(--txt);background:var(--panel);
+    border:1px solid var(--steel);border-left:3px solid var(--tuf);
+    padding:11px 16px;
+    clip-path:polygon(0 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  }
+  .equip-tag b{color:var(--tuf);font-weight:400}
+  .equip-tag .dot{width:8px;height:8px;border-radius:50%;background:var(--tuf);box-shadow:0 0 10px var(--tuf)}
+
+  /* ---------- title block: tactical unit plate (signature) ---------- */
+  .plate{
+    font-family:var(--f-mono);
+    background:var(--panel);
+    border:1px solid var(--steel);
+    position:relative;
+    clip-path:polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+  }
+  .plate::after{
+    content:"";position:absolute;top:0;right:0;
+    border-top:22px solid var(--tuf);border-left:22px solid transparent;
+  }
+  .plate-haz{height:6px;background:repeating-linear-gradient(-45deg, var(--tuf) 0 10px, var(--hazard) 10px 20px)}
+  .plate-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:11px 16px;border-bottom:1px solid var(--steel);
+    font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--txt);
+  }
+  .plate-head .rev{color:var(--tuf)}
+  .p-row{border-top:1px solid var(--steel-soft)}
+  .p-row:first-of-type{border-top:none}
+  .p-cell{padding:11px 16px}
+  .p-cell .k{font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--txt-faint);display:block;margin-bottom:4px}
+  .p-cell .v{font-size:.88rem;color:var(--txt)}
+  .p-split{display:grid;grid-template-columns:1fr 1fr}
+  .p-split .p-cell + .p-cell{border-left:1px solid var(--steel-soft)}
+
+  @media(max-width:820px){
+    .hero-grid{grid-template-columns:1fr;gap:38px}
+    .plate{max-width:430px}
+  }
+
+  /* ---------- section scaffold ---------- */
+  section.block{padding:58px 0;border-top:1px solid var(--steel)}
+  .sec-head{display:flex;align-items:center;gap:16px;margin-bottom:32px}
+  .sec-head .idx{
+    font-family:var(--f-mono);font-size:.78rem;color:var(--hazard);font-weight:400;
+    background:var(--tuf);padding:4px 10px;letter-spacing:.08em;
+    clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);
+  }
+  .sec-head h2{font-family:var(--f-display);font-size:1.6rem;font-weight:700;letter-spacing:.02em;text-transform:uppercase}
+  .sec-head .rule{flex:1;height:1px;background:linear-gradient(90deg,var(--steel),transparent)}
+
+  /* ---------- video: HUD frame ---------- */
+  .video-frame{
+    position:relative;width:100%;aspect-ratio:16/9;
+    background:repeating-linear-gradient(45deg,#111318 0 14px,#0d0f1300 14px 28px), #0a0b0e;
+    border:1px solid var(--steel);overflow:hidden;
+  }
+  .video-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  /* corner brackets */
+  .video-wrap{position:relative}
+  .video-wrap .bk{position:absolute;width:20px;height:20px;z-index:2;pointer-events:none}
+  .video-wrap .bk.tl{top:-1px;left:-1px;border-top:2px solid var(--tuf);border-left:2px solid var(--tuf)}
+  .video-wrap .bk.tr{top:-1px;right:-1px;border-top:2px solid var(--tuf);border-right:2px solid var(--tuf)}
+  .video-wrap .bk.bl{bottom:-1px;left:-1px;border-bottom:2px solid var(--tuf);border-left:2px solid var(--tuf)}
+  .video-wrap .bk.br{bottom:-1px;right:-1px;border-bottom:2px solid var(--tuf);border-right:2px solid var(--tuf)}
+  .video-meta{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;color:var(--txt-dim)}
+  .video-meta a{color:var(--tuf);font-weight:600;text-decoration:none;border-bottom:1px solid var(--tuf-dim);font-family:var(--f-body)}
+  .video-meta a:hover{border-bottom-color:var(--tuf)}
+
+  /* ---------- deliverables ---------- */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+  .card{
+    display:flex;flex-direction:column;gap:13px;
+    background:var(--panel);border:1px solid var(--steel);
+    padding:24px 24px 22px;text-decoration:none;color:inherit;
+    position:relative;
+    clip-path:polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+    transition:transform .18s ease, background .18s ease;
+  }
+  .card::after{
+    content:"";position:absolute;top:0;right:0;
+    border-top:18px solid var(--steel);border-left:18px solid transparent;
+    transition:border-top-color .18s ease;
+  }
+  .card:hover{transform:translateY(-4px);background:var(--panel-2)}
+  .card:hover::after{border-top-color:var(--tuf)}
+  .card:focus-visible{outline:2px solid var(--tuf);outline-offset:3px;background:var(--panel-2)}
+  .card:focus-visible::after{border-top-color:var(--tuf)}
+  .card:focus-visible h3{color:var(--tuf)}
+
+  .card-top{display:flex;justify-content:space-between;align-items:center}
+  .card-code{font-family:var(--f-mono);font-size:.82rem;letter-spacing:.08em;color:var(--tuf);font-weight:400}
+  .card-type{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--txt-faint);border:1px solid var(--steel);padding:3px 8px}
+  .card h3{font-family:var(--f-display);font-size:1.2rem;font-weight:600;line-height:1.2;text-transform:uppercase;letter-spacing:.01em}
+  .card p{font-size:.94rem;color:var(--txt-dim);font-weight:400}
+  .card-cta{margin-top:auto;font-family:var(--f-mono);font-size:.8rem;color:var(--tuf);display:inline-flex;align-items:center;gap:8px}
+  .card-cta .arrow{transition:transform .18s ease}
+  .card:hover .card-cta .arrow{transform:translateX(5px)}
+
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+
+  /* ---------- specs ---------- */
+  .specs{background:var(--panel);border:1px solid var(--steel)}
+  .spec-row{display:grid;grid-template-columns:210px 1fr;border-top:1px solid var(--steel-soft)}
+  .spec-row:first-child{border-top:none}
+  .spec-k{
+    padding:14px 20px;font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--txt-dim);border-right:1px solid var(--steel-soft);display:flex;align-items:center;gap:10px;
+  }
+  .spec-k::before{content:"";width:6px;height:6px;background:var(--tuf);transform:rotate(45deg);flex:none}
+  .spec-v{padding:14px 20px;font-family:var(--f-mono);font-size:.88rem;color:var(--txt)}
+  .spec-v b{color:var(--tuf);font-weight:400}
+  @media(max-width:560px){
+    .spec-row{grid-template-columns:1fr}
+    .spec-k{border-right:none;border-bottom:1px dashed var(--steel-soft)}
+  }
+
+  /* ---------- reference group ---------- */
+  .refgroup{
+    display:flex;justify-content:space-between;align-items:center;gap:26px;flex-wrap:wrap;
+    background:var(--panel);border:1px solid var(--steel);border-left:4px solid var(--tuf);padding:30px 34px;
+    position:relative;overflow:hidden;
+  }
+  .refgroup::before{
+    content:"";position:absolute;top:0;right:0;bottom:0;width:120px;
+    background:repeating-linear-gradient(-45deg, rgba(255,198,26,.06) 0 12px, transparent 12px 24px);
+    pointer-events:none;
+  }
+  .refgroup h3{font-family:var(--f-display);font-size:1.35rem;font-weight:700;text-transform:uppercase;letter-spacing:.02em;margin-bottom:7px}
+  .refgroup p{color:var(--txt-dim);font-size:.96rem;max-width:52ch;font-weight:400}
+  .btn{
+    font-family:var(--f-mono);font-size:.82rem;letter-spacing:.06em;text-transform:uppercase;
+    background:var(--tuf);color:var(--hazard);text-decoration:none;font-weight:400;
+    padding:14px 24px;white-space:nowrap;display:inline-flex;align-items:center;gap:10px;
+    clip-path:polygon(0 0,100% 0,100% 100%,12px 100%,0 calc(100% - 12px));
+    transition:transform .18s ease, box-shadow .18s ease;position:relative;z-index:1;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 0 22px rgba(255,198,26,.35)}
+  .btn:focus-visible{outline:2px solid var(--txt);outline-offset:3px}
+
+  /* ---------- footer ---------- */
+  footer{padding:20px 0 58px}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-top:38px}
+  .foot-inst{font-family:var(--f-display);font-weight:600;font-size:1rem;line-height:1.5;text-transform:uppercase;letter-spacing:.02em}
+  .foot-inst span{color:var(--txt-dim);font-weight:400;text-transform:none;letter-spacing:0}
+  .foot-meta{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--txt-faint);text-align:right;line-height:1.9}
+
+  /* ---------- reveal ---------- */
+  .js [data-reveal]{opacity:0;transform:translateY(16px)}
+  .js [data-reveal].shown{opacity:1;transform:none;transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1)}
+  @media(prefers-reduced-motion:reduce){
+    .js [data-reveal]{opacity:1;transform:none;transition:none}
+    .card,.btn,.card-cta .arrow{transition:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="wrap">
+    <span class="mono inst">USAC · FIUSAC · Escuela de Ciencias y Sistemas</span>
+    <span class="mono tag-right">Informe 01 / 2026</span>
+  </div>
+</header>
+<div class="hazard"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow" data-reveal><span class="sq"></span>Prácticas Iniciales · Sección C</div>
+      <h1 data-reveal>
+        <span class="num">// Informe No. 01</span>
+        Mantenimiento e<br>Infraestructura de<br><span class="stroke">Hardware</span>
+      </h1>
+      <p class="hero-sub" data-reveal>
+        Ecosistema de soporte técnico para el mantenimiento preventivo de un equipo
+        portátil: video-tutorial, manual técnico y guía rápida, documentados paso a paso.
+      </p>
+      <div class="equip-tag" data-reveal>
+        <span class="dot"></span>
+        <span>Equipo intervenido&nbsp;·&nbsp;<b>ASUS TUF Gaming F16 · FX607VJ</b></span>
+      </div>
+    </div>
+
+    <!-- SIGNATURE: placa táctica de identificación -->
+    <div class="plate" data-reveal>
+      <div class="plate-haz"></div>
+      <div class="plate-head"><span>Ficha Técnica</span><span class="rev">REV 1.0</span></div>
+      <div class="p-row"><div class="p-cell"><span class="k">Documento</span><span class="v">INF-01 · Mantenimiento HW</span></div></div>
+      <div class="p-row p-split">
+        <div class="p-cell"><span class="k">Fecha</span><span class="v">30·07·2026</span></div>
+        <div class="p-cell"><span class="k">Curso</span><span class="v">Prácticas Inic. · C</span></div>
+      </div>
+      <div class="p-row"><div class="p-cell"><span class="k">Autor</span><span class="v">Diego José Piox Casasola</span></div></div>
+      <div class="p-row p-split">
+        <div class="p-cell"><span class="k">Carné (CUI)</span><span class="v">202405843</span></div>
+        <div class="p-cell"><span class="k">Escuela</span><span class="v">Cs. y Sistemas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VIDEO ============ -->
+<section class="block" id="video">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="idx">E-01</span>
+      <h2>Video-tutorial</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="video-wrap" data-reveal>
+      <span class="bk tl"></span><span class="bk tr"></span><span class="bk bl"></span><span class="bk br"></span>
+      <div class="video-frame">
+        <!-- ▼▼ REEMPLAZA "VIDEO_ID_AQUI" por el ID de tu video de YouTube (lo que va después de v= o de youtu.be/) ▼▼ -->
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/VIDEO_ID_AQUI"
+          title="Video-tutorial: Mantenimiento Avanzado de Hardware"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="video-meta" data-reveal>
+      <span class="mono">Mantenimiento Avanzado de Hardware</span>
+      <span class="mono">1080p · máx. 10 min</span>
+      <!-- ▼ Reemplaza también este enlace ▼ -->
+      <a href="https://youtu.be/VIDEO_ID_AQUI" target="_blank" rel="noopener">Ver directamente en YouTube ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ENTREGABLES ============ -->
+<section class="block" id="entregables">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="idx">DOCS</span>
+      <h2>Entregables publicados</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="grid">
+
+      <!-- ▼ Reemplaza los href de los PDF si usas otros nombres de archivo ▼ -->
+      <a class="card" href="manual-tecnico.pdf" target="_blank" rel="noopener" data-reveal>
+        <div class="card-top"><span class="card-code">E-02</span><span class="card-type">PDF</span></div>
+        <h3>Manual Técnico</h3>
+        <p>Guía completa de mantenimiento preventivo y correctivo del equipo, con procedimientos detallados.</p>
+        <span class="card-cta">Abrir documento <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" href="trifoliar.pdf" target="_blank" rel="noopener" data-reveal>
+        <div class="card-top"><span class="card-code">E-03</span><span class="card-type">PDF</span></div>
+        <h3>Trifoliar · Guía Rápida</h3>
+        <p>Pieza sintética dirigida al usuario final para el mantenimiento básico, sin tecnicismos avanzados.</p>
+        <span class="card-cta">Abrir documento <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" href="documento-auditoria.pdf" target="_blank" rel="noopener" data-reveal>
+        <div class="card-top"><span class="card-code">E-04</span><span class="card-type">PDF · Prompts</span></div>
+        <h3>Documento de Auditoría</h3>
+        <p>Ingeniería de instrucciones (prompt engineering) empleada en la generación del contenido con IA.</p>
+        <span class="card-cta">Abrir documento <span class="arrow">→</span></span>
+      </a>
+
+      <a class="card" href="#video" data-reveal>
+        <div class="card-top"><span class="card-code">E-01</span><span class="card-type">Video</span></div>
+        <h3>Video-tutorial</h3>
+        <p>Registro audiovisual del desensamblaje, identificación de componentes y mantenimiento del equipo.</p>
+        <span class="card-cta">Ver arriba <span class="arrow">↑</span></span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ ESPECIFICACIONES ============ -->
+<section class="block" id="especificaciones">
+  <div class="wrap">
+    <div class="sec-head" data-reveal>
+      <span class="idx">HW</span>
+      <h2>Especificaciones del equipo</h2>
+      <span class="rule"></span>
+    </div>
+    <div class="specs" data-reveal>
+      <div class="spec-row"><div class="spec-k">Procesador</div><div class="spec-v">Intel Core 5 210H · 8 núcleos / 12 hilos · <b>2.20 GHz</b></div></div>
+      <div class="spec-row"><div class="spec-k">Memoria RAM</div><div class="spec-v">16 GB DDR4 · 3200 MHz · <b>canal simple</b> (1 de 2 ranuras)</div></div>
+      <div class="spec-row"><div class="spec-k">Almacenamiento</div><div class="spec-v">SSD NVMe Samsung · 512 GB · interfaz PCIe M.2</div></div>
+      <div class="spec-row"><div class="spec-k">Gráficos</div><div class="spec-v">NVIDIA GeForce RTX 3050 <b>6 GB</b> + Intel Graphics</div></div>
+      <div class="spec-row"><div class="spec-k">Tarjeta madre</div><div class="spec-v">ASUSTeK FX607VJ · rev 1.0 · diseño propietario</div></div>
+      <div class="spec-row"><div class="spec-k">Firmware</div><div class="spec-v">American Megatrends · FX607VJ.334</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GRUPO DE REFERENCIA ============ -->
+<section class="block" id="referencia">
+  <div class="wrap">
+    <div class="refgroup" data-reveal>
+      <div>
+        <h3>Grupo de referencia</h3>
+        <p>Comunidad de soporte técnico consultada para los procedimientos de mantenimiento y la resolución de fallas documentadas en la bitácora.</p>
+      </div>
+      <!-- ▼ Reemplaza "#" por el enlace real del foro / Discord / subreddit que uses ▼ -->
+      <a class="btn" href="#" target="_blank" rel="noopener">Visitar comunidad ↗</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<div class="hazard"></div>
+<footer>
+  <div class="wrap foot-grid">
+    <div class="foot-inst">
+      Universidad de San Carlos de Guatemala<br>
+      <span>Facultad de Ingeniería · Escuela de Ciencias y Sistemas</span>
+    </div>
+    <div class="foot-meta">
+      Diego José Piox Casasola · 202405843<br>
+      Prácticas Iniciales · Sección C · 2026
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.documentElement.classList.add('js');
+  document.body.classList.add('js');
+  const items = document.querySelectorAll('[data-reveal]');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || !('IntersectionObserver' in window)) {
+    items.forEach(el => el.classList.add('shown'));
+  } else {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('shown'), i * 55);
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    items.forEach(el => io.observe(el));
+  }
+</script>
+
+</body>
+</html>
